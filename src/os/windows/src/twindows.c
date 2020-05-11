@@ -32,11 +32,11 @@
 #include <winbase.h>
 #include <Winsock2.h>
 
-char configDir[TSDB_FILENAME_LEN] = "C:/TDengine/cfg";
-char tsDirectory[TSDB_FILENAME_LEN] = "C:/TDengine/data";
-char logDir[TSDB_FILENAME_LEN] = "C:/TDengine/log";
-char dataDir[TSDB_FILENAME_LEN] = "C:/TDengine/data";
-char scriptDir[TSDB_FILENAME_LEN] = "C:/TDengine/script";
+char configDir[TSDB_FILENAME_LEN] = "C:/icore/tsdb/conf";
+char tsDirectory[TSDB_FILENAME_LEN] = "C:/icore/tsdb/data";
+char logDir[TSDB_FILENAME_LEN] = "C:/icore/tsdb/logs";
+char dataDir[TSDB_FILENAME_LEN] = "C:/icore/tsdb/data";
+char scriptDir[TSDB_FILENAME_LEN] = "C:/icore/tsdb/app";
 
 bool taosCheckPthreadValid(pthread_t thread) {
   return thread.p != NULL;

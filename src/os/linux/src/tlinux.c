@@ -34,11 +34,11 @@
 #include "tutil.h"
 #include "ttimer.h"
 
-char configDir[TSDB_FILENAME_LEN] = "/etc/taos";
-char tsDirectory[TSDB_FILENAME_LEN] = "/var/lib/taos";
-char dataDir[TSDB_FILENAME_LEN] = "/var/lib/taos";
-char logDir[TSDB_FILENAME_LEN] = "/var/log/taos";
-char scriptDir[TSDB_FILENAME_LEN] = "/etc/taos";
+char configDir[TSDB_FILENAME_LEN] = "/icore/tsdb/conf";
+char tsDirectory[TSDB_FILENAME_LEN] = "/icore/tsdb/data";
+char dataDir[TSDB_FILENAME_LEN] = "/icore/tsdb/data";
+char logDir[TSDB_FILENAME_LEN] = "/icore/tsdb/logs";
+char scriptDir[TSDB_FILENAME_LEN] = "/icore/tsdb/app";
 
 int64_t str2int64(char *str) {
   char *endptr = NULL;

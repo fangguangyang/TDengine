@@ -26,24 +26,24 @@
 
 /**************** Global variables ****************/
 #ifdef WINDOWS
-  char    CLIENT_VERSION[] = "Welcome to the TDengine shell from windows, client version:%s ";
+  char    CLIENT_VERSION[] = "Welcome to the TSDB shell from windows, client version:%s ";
 #elif defined(DARWIN)
-  char    CLIENT_VERSION[] = "Welcome to the TDengine shell from mac, client version:%s ";
+  char    CLIENT_VERSION[] = "Welcome to the TSDB shell from mac, client version:%s ";
 #else
   #ifdef CLUSTER
-    char    CLIENT_VERSION[] = "Welcome to the TDengine shell from linux, enterprise client version:%s ";
+    char    CLIENT_VERSION[] = "Welcome to the TSDB shell from linux, enterprise client version:%s ";
   #else
-    char    CLIENT_VERSION[] = "Welcome to the TDengine shell from linux, community client version:%s ";
+    char    CLIENT_VERSION[] = "Welcome to the TSDB shell from linux, enterprise client version:%s ";
   #endif
 #endif
 
 #ifdef CLUSTER
- char      SERVER_VERSION[] = "enterprise server version:%s\nCopyright (c) 2017 by TAOS Data, Inc. All rights reserved.\n\n";
+ char      SERVER_VERSION[] = "enterprise server version:%s\nCopyright (c) 2020 by steerinfo, Inc. All rights reserved.\n\n";
 #else
- char      SERVER_VERSION[] = "community server version:%s\nCopyright (c) 2017 by TAOS Data, Inc. All rights reserved.\n\n";
+ char      SERVER_VERSION[] = "enterprise server version:%s\nCopyright (c) 2020 by steerinfo, Inc. All rights reserved.\n\n";
 #endif
 
-char      PROMPT_HEADER[] = "taos> ";
+char      PROMPT_HEADER[] = "tsdb> ";
 char      CONTINUE_PROMPT[] = "   -> ";
 int       prompt_size = 6;
 TAOS_RES *result = NULL;

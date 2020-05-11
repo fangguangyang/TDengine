@@ -9,7 +9,7 @@ IF ((TD_LINUX_64) OR (TD_LINUX_32 AND TD_ARM))
   INCLUDE_DIRECTORIES(inc)
   AUX_SOURCE_DIRECTORY(src SRC)
   ADD_LIBRARY(http ${SRC})
-  TARGET_LINK_LIBRARIES(http taos_static z)
+  TARGET_LINK_LIBRARIES(http tscli_static z)
 
   IF (TD_CLUSTER)
     TARGET_LINK_LIBRARIES(http http_admin)

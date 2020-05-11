@@ -12,16 +12,16 @@ IF ((TD_LINUX_64) OR (TD_LINUX_32 AND TD_ARM))
   INCLUDE_DIRECTORIES(inc)
   AUX_SOURCE_DIRECTORY(./src SRC)
   LIST(REMOVE_ITEM SRC ./src/vnodeFileUtil.c)
-  LIST(REMOVE_ITEM SRC ./src/taosGrant.c)
+  LIST(REMOVE_ITEM SRC ./src/tscliGrant.c)
 
-  ADD_EXECUTABLE(taosd ${SRC})
+  ADD_EXECUTABLE(tsdb ${SRC})
 
-  TARGET_LINK_LIBRARIES(taosd taos_static trpc tutil sdb monitor pthread http)
+  TARGET_LINK_LIBRARIES(tsdb tscli_static trpc tutil sdb monitor pthread http)
 
   IF (TD_LITE)
-    TARGET_LINK_LIBRARIES(taosd taosd_lite)
+    TARGET_LINK_LIBRARIES(tsdb tsdb_lite)
   ELSE ()
-    TARGET_LINK_LIBRARIES(taosd taosd_cluster)
+    TARGET_LINK_LIBRARIES(tsdb tsdb_cluster)
   ENDIF ()
 
   SET(PREPARE_ENV_CMD "prepare_env_cmd")
@@ -29,14 +29,14 @@ IF ((TD_LINUX_64) OR (TD_LINUX_32 AND TD_ARM))
   ADD_CUSTOM_COMMAND(OUTPUT ${PREPARE_ENV_CMD}
     POST_BUILD 
     COMMAND echo "make test directory"
-    DEPENDS taosd
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${TD_TESTS_OUTPUT_DIR}/cfg/
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${TD_TESTS_OUTPUT_DIR}/log/
+    DEPENDS tsdb
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${TD_TESTS_OUTPUT_DIR}/conf/
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${TD_TESTS_OUTPUT_DIR}/logs/
     COMMAND ${CMAKE_COMMAND} -E make_directory ${TD_TESTS_OUTPUT_DIR}/data/
-    COMMAND ${CMAKE_COMMAND} -E echo dataDir ${TD_TESTS_OUTPUT_DIR}/data > ${TD_TESTS_OUTPUT_DIR}/cfg/taos.cfg
-    COMMAND ${CMAKE_COMMAND} -E echo logDir ${TD_TESTS_OUTPUT_DIR}/log  >> ${TD_TESTS_OUTPUT_DIR}/cfg/taos.cfg
-    COMMAND ${CMAKE_COMMAND} -E echo charset UTF-8  >> ${TD_TESTS_OUTPUT_DIR}/cfg/taos.cfg
-    COMMENT "prepare taosd environment")
+    COMMAND ${CMAKE_COMMAND} -E echo dataDir ${TD_TESTS_OUTPUT_DIR}/data > ${TD_TESTS_OUTPUT_DIR}/conf/tsdb.conf
+    COMMAND ${CMAKE_COMMAND} -E echo logDir ${TD_TESTS_OUTPUT_DIR}/log  >> ${TD_TESTS_OUTPUT_DIR}/conf/tsdb.conf
+    COMMAND ${CMAKE_COMMAND} -E echo charset UTF-8  >> ${TD_TESTS_OUTPUT_DIR}/conf/tsdb.conf
+    COMMENT "prepare tsdb environment")
   ADD_CUSTOM_TARGET(${PREPARE_ENV_TARGET} ALL WORKING_DIRECTORY ${TD_EXECUTABLE_OUTPUT_PATH} DEPENDS ${PREPARE_ENV_CMD})
 
 ENDIF ()

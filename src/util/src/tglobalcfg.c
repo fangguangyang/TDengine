@@ -118,7 +118,7 @@ char tsMgmtZone[16] = "rzone";
 char tsLocalIp[TSDB_IPv4ADDR_LEN] = {0};
 char tsDefaultDB[TSDB_DB_NAME_LEN] = {0};
 char tsDefaultUser[64] = "root";
-char tsDefaultPass[64] = "taosdata";
+char tsDefaultPass[64] = "steerinfo";
 int  tsMaxMeterConnections = 10000;
 int  tsMaxMgmtConnections = 2000;
 int  tsMaxVnodeConnections = 10000;
@@ -842,13 +842,13 @@ void tsReadGlobalLogConfig() {
   if (full_path.we_wordv != NULL && full_path.we_wordv[0] != NULL) {
     strcpy(configDir, full_path.we_wordv[0]);
   } else {
-    printf("configDir:%s not there, use default value: /etc/taos", configDir);
-    strcpy(configDir, "/etc/taos");
+    printf("configDir:%s not there, use default value: /icore/tsdb/conf", configDir);
+    strcpy(configDir, "/icore/tsdb/conf");
   }
   wordfree(&full_path);
 
   tsReadLogOption("logDir", logDir);
-  sprintf(fileName, "%s/taos.cfg", configDir);
+  sprintf(fileName, "%s/tsdb.conf", configDir);
   fp = fopen(fileName, "r");
   if (fp == NULL) {
     printf("\noption file:%s not found, all options are set to system default\n", fileName);
@@ -888,7 +888,7 @@ bool tsReadGlobalConfig() {
   int    olen, vlen, vlen1;
   char   fileName[128];
 
-  sprintf(fileName, "%s/taos.cfg", configDir);
+  sprintf(fileName, "%s/tsdb.conf", configDir);
   fp = fopen(fileName, "r");
   if (fp == NULL) {
   } else {
@@ -1040,7 +1040,7 @@ int tsCfgDynamicOptions(char *msg) {
 }
 
 void tsPrintGlobalConfig() {
-  pPrint("   taos config & system info:");
+  pPrint("   tsdb-icore config & system info:");
   pPrint("==================================");
 
   for (int i = 0; i < tsGlobalConfigNum; ++i) {

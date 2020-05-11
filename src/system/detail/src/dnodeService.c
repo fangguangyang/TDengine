@@ -33,13 +33,13 @@ void signal_handler(int signum, siginfo_t *sigInfo, void *context) {
     return;
   }
   syslog(LOG_INFO, "Shut down signal is %d", signum);
-  syslog(LOG_INFO, "Shutting down TDengine service...");
+  syslog(LOG_INFO, "Shutting down TSDB-iCore service...");
   // clean the system.
   dPrint("shut down signal is %d, sender PID:%d", signum, sigInfo->si_pid);
   dnodeCleanUpSystem();
   // close the syslog
-  syslog(LOG_INFO, "Shut down TDengine service successfully");
-  dPrint("TDengine is shut down!");
+  syslog(LOG_INFO, "Shut down TSDB-iCore service successfully");
+  dPrint("TSDB-iCore is shut down!");
   closelog();
   exit(EXIT_SUCCESS);
 }
@@ -92,19 +92,19 @@ int main(int argc, char *argv[]) {
   // sigaction(SIGABRT, &act, NULL);
 
   // Open /var/log/syslog file to record information.
-  openlog("TDengine:", LOG_PID | LOG_CONS | LOG_NDELAY, LOG_LOCAL1);
-  syslog(LOG_INFO, "Starting TDengine service...");
+  openlog("TSDB-iCore:", LOG_PID | LOG_CONS | LOG_NDELAY, LOG_LOCAL1);
+  syslog(LOG_INFO, "Starting TSDB-iCore service...");
 
   // Initialize the system
   if (dnodeInitSystem() < 0) {
-    syslog(LOG_ERR, "Error initialize TDengine system");
+    syslog(LOG_ERR, "Error initialize TSDB-iCore system");
     closelog();
 
     dnodeCleanUpSystem();
     exit(EXIT_FAILURE);
   }
 
-  syslog(LOG_INFO, "Started TDengine service successfully.");
+  syslog(LOG_INFO, "Started TSDB-iCore service successfully.");
 
   while (1) {
     sleep(1000);

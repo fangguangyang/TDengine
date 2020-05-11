@@ -119,17 +119,17 @@ int dnodeInitSystem() {
 
   if (stat(logDir, &dirstat) < 0) mkdir(logDir, 0755);
 
-  sprintf(temp, "%s/taosdlog", logDir);
+  sprintf(temp, "%s/tsdblog", logDir);
   if (taosInitLog(temp, tsNumOfLogLines, 1) < 0) printf("failed to init log file\n");
 
   if (!tsReadGlobalConfig()) {  // TODO : Change this function
     tsPrintGlobalConfig();
-    dError("TDengine read global config failed");
+    dError("TSDB-iCore read global config failed");
     return -1;
   }
 
   if (taosCreateTierDirectory() != 0) {
-    dError("TDengine init tier directory failed");
+    dError("TSDB-iCore init tier directory failed");
     return -1;
   }
 
@@ -145,7 +145,7 @@ int dnodeInitSystem() {
   dnodeInitModules();
   pthread_mutex_init(&dmutex, NULL);
 
-  dPrint("starting to initialize TDengine ...");
+  dPrint("starting to initialize TSDB-iCore ...");
 
   vnodeInitQHandle();
   if (dnodeInitSystemSpec() < 0) {
@@ -155,14 +155,14 @@ int dnodeInitSystem() {
   for (int mod = 0; mod < TSDB_MOD_MAX; ++mod) {
     if (tsModule[mod].num != 0 && tsModule[mod].initFp) {
       if ((*tsModule[mod].initFp)() != 0) {
-        dError("TDengine initialization failed");
+        dError("TSDB-iCore initialization failed");
         return -1;
       }
     }
   }
 
   if (vnodeInitSystem() != 0) {
-    dError("TDengine vnodes initialization failed");
+    dError("TSDB-iCore vnodes initialization failed");
     return -1;
   }
 
@@ -170,7 +170,7 @@ int dnodeInitSystem() {
 
   dnodeStartModuleSpec();
 
-  dPrint("TDengine is initialized successfully");
+  dPrint("TSDB-iCore is initialized successfully");
 
   return 0;
 }

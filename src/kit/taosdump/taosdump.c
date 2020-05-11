@@ -36,7 +36,7 @@
 #include "tutil.h"
 
 #define COMMAND_SIZE 65536
-#define DEFAULT_DUMP_FILE "taosdump.sql"
+#define DEFAULT_DUMP_FILE "tsdump.sql"
 
 int  converStringToReadable(char *str, int size, char *buf, int bufsize);
 int  convertNCharToReadable(char *str, int size, char *buf, int bufsize);
@@ -128,7 +128,7 @@ typedef struct {
 SDbInfo **dbInfos = NULL;
 
 const char *argp_program_version = version;
-const char *argp_program_bug_address = "<support@taosdata.com>";
+const char *argp_program_bug_address = "<support@steerinfo.com>";
 
 /* Program documentation. */
 static char doc[] = "";
@@ -149,12 +149,12 @@ static struct argp_option options[] = {
   // connection option
   {"host",          'h', "HOST",       0, "Server host dumping data from. Default is localhost.",     0},
   {"user",          'u', "USER",       0, "User name used to connect to server. Default is root.",    0},
-  {"password",      'p', "PASSWORD",   0, "User password to connect to server. Default is taosdata.", 0},
+  {"password",      'p', "PASSWORD",   0, "User password to connect to server. Default is steerinfo.", 0},
   {"port",          'P', "PORT",       0, "Port to connect",                                          0},
   // input/output file
   {"output",        'o', "OUTPUT",     0, "Output file name.",                                        1},
   {"input",         'i', "INPUT",      0, "Input file name.",                                         1},
-  {"config",        'c', "CONFIG_DIR", 0, "Configure directory. Default is /etc/taos/taos.cfg.",      1},
+  {"config",        'c', "CONFIG_DIR", 0, "Configure directory. Default is /icore/tsdb/tsdb.conf.",      1},
   {"encode", 'e', "ENCODE", 0, "Input file encoding.", 1},
   // dump unit options
   {"all-databases", 'A', 0,            0, "Dump all databases.",                                      2},
@@ -458,7 +458,7 @@ int taosDumpOut(struct arguments *arguments) {
   /* Connect to server */
   taos = taos_connect(arguments->host, arguments->user, arguments->password, NULL, arguments->port);
   if (taos == NULL) {
-    fprintf(stderr, "failed to connect to TDengine server\n");
+    fprintf(stderr, "failed to connect to TSDB server\n");
     goto _exit_failure;
   }
 
@@ -1002,7 +1002,7 @@ int taosCheckParam(struct arguments *arguments) {
   }
   if (arguments->arg_list_len == 0) {
     if ((!arguments->all_databases) && (!arguments->isDumpIn)) {
-      fprintf(stderr, "taosdump requires parameters\n");
+      fprintf(stderr, "tsdump requires parameters\n");
       return -1;
     }
   }
@@ -1100,7 +1100,7 @@ int taosDumpIn(struct arguments *arguments) {
 
   taos = taos_connect(arguments->host, arguments->user, arguments->password, NULL, arguments->port);
   if (taos == NULL) {
-    fprintf(stderr, "failed to connect to TDengine server\n");
+    fprintf(stderr, "failed to connect to TSDB server\n");
     goto _dumpin_exit_failure;
   }
 

@@ -11,15 +11,15 @@ IF ((TD_LINUX_64) OR (TD_LINUX_32 AND TD_ARM))
   INCLUDE_DIRECTORIES(${TD_COMMUNITY_DIR}/deps/jni/linux)
 
   # set the static lib name
-  ADD_LIBRARY(taos_static STATIC ${SRC})
-  TARGET_LINK_LIBRARIES(taos_static trpc tutil pthread m rt)
-  SET_TARGET_PROPERTIES(taos_static PROPERTIES OUTPUT_NAME "taos_static")
-  SET_TARGET_PROPERTIES(taos_static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+  ADD_LIBRARY(tscli_static STATIC ${SRC})
+  TARGET_LINK_LIBRARIES(tscli_static trpc tutil pthread m rt)
+  SET_TARGET_PROPERTIES(tscli_static PROPERTIES OUTPUT_NAME "tscli_static")
+  SET_TARGET_PROPERTIES(tscli_static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
   # generate dynamic library (*.so)
-  ADD_LIBRARY(taos SHARED ${SRC})
-  TARGET_LINK_LIBRARIES(taos trpc tutil pthread m rt)
-  SET_TARGET_PROPERTIES(taos PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+  ADD_LIBRARY(tscli SHARED ${SRC})
+  TARGET_LINK_LIBRARIES(tscli trpc tutil pthread m rt)
+  SET_TARGET_PROPERTIES(tscli PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
   #set version of .so
   #VERSION    so version
@@ -29,36 +29,36 @@ IF ((TD_LINUX_64) OR (TD_LINUX_32 AND TD_ARM))
         OUTPUT_VARIABLE
         VERSION_INFO)
   MESSAGE(STATUS "build version ${VERSION_INFO}")
-  SET_TARGET_PROPERTIES(taos PROPERTIES VERSION ${VERSION_INFO} SOVERSION 1)
+  SET_TARGET_PROPERTIES(tscli PROPERTIES VERSION ${VERSION_INFO} SOVERSION 1)
   
 ELSEIF (TD_WINDOWS_64)
   INCLUDE_DIRECTORIES(${TD_COMMUNITY_DIR}/deps/jni/windows)
   INCLUDE_DIRECTORIES(${TD_COMMUNITY_DIR}/deps/jni/windows/win32)
   INCLUDE_DIRECTORIES(${TD_COMMUNITY_DIR}/deps/pthread)
   
-  ADD_LIBRARY(taos_static STATIC ${SRC})
-  TARGET_LINK_LIBRARIES(taos_static trpc tutil)
+  ADD_LIBRARY(tscli_static STATIC ${SRC})
+  TARGET_LINK_LIBRARIES(tscli_static trpc tutil)
 
   # generate dynamic library (*.dll)
-  ADD_LIBRARY(taos SHARED ${SRC})
+  ADD_LIBRARY(tscli SHARED ${SRC})
   IF (NOT TD_GODLL)
-    SET_TARGET_PROPERTIES(taos PROPERTIES LINK_FLAGS /DEF:${TD_COMMUNITY_DIR}/src/client/src/taos.def)
+    SET_TARGET_PROPERTIES(tscli PROPERTIES LINK_FLAGS /DEF:${TD_COMMUNITY_DIR}/src/client/src/tscli.def)
   ENDIF ()
-  TARGET_LINK_LIBRARIES(taos trpc)
+  TARGET_LINK_LIBRARIES(tscli trpc)
 
 ELSEIF (TD_DARWIN_64)
   SET(CMAKE_MACOSX_RPATH 1)
   INCLUDE_DIRECTORIES(${TD_COMMUNITY_DIR}/deps/jni/linux)
 
-  ADD_LIBRARY(taos_static STATIC ${SRC})
-  TARGET_LINK_LIBRARIES(taos_static trpc tutil pthread m)
-  SET_TARGET_PROPERTIES(taos_static PROPERTIES OUTPUT_NAME "taos_static")
+  ADD_LIBRARY(tscli_static STATIC ${SRC})
+  TARGET_LINK_LIBRARIES(tscli_static trpc tutil pthread m)
+  SET_TARGET_PROPERTIES(tscli_static PROPERTIES OUTPUT_NAME "tscli_static")
 
   # generate dynamic library (*.dylib)
-  ADD_LIBRARY(taos SHARED ${SRC})
-  TARGET_LINK_LIBRARIES(taos trpc tutil pthread m)
+  ADD_LIBRARY(tscli SHARED ${SRC})
+  TARGET_LINK_LIBRARIES(tscli trpc tutil pthread m)
 
-  SET_TARGET_PROPERTIES(taos PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+  SET_TARGET_PROPERTIES(tscli PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
   #set version of .so
   #VERSION    so version
@@ -68,6 +68,6 @@ ELSEIF (TD_DARWIN_64)
       OUTPUT_VARIABLE
       VERSION_INFO)
   MESSAGE(STATUS "build version ${VERSION_INFO}")
-  SET_TARGET_PROPERTIES(taos PROPERTIES VERSION ${VERSION_INFO} SOVERSION 1)
+  SET_TARGET_PROPERTIES(tscli PROPERTIES VERSION ${VERSION_INFO} SOVERSION 1)
 ENDIF ()
 

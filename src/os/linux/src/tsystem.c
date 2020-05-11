@@ -588,7 +588,7 @@ void tsPrintOsInfo() {
 
 void taosKillSystem() {
   // SIGINT
-  pPrint("taosd will shut down soon");
+  pPrint("tsdb will shut down soon");
   kill(tsProcId, 2);
 }
 

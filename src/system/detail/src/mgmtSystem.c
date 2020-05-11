@@ -68,7 +68,7 @@ void mgmtCleanUpSystem() {
 }
 
 int mgmtStartSystem() {
-  mPrint("starting to initialize TDengine mgmt ...");
+  mPrint("starting to initialize TSDB-iCore mgmt ...");
 
   struct stat dirstat;
   if (stat(mgmtDirectory, &dirstat) < 0) {
@@ -76,7 +76,7 @@ int mgmtStartSystem() {
   }
 
   if (mgmtStartCheckMgmtRunning() != 0) {
-    mPrint("TDengine mgmt module already started...");
+    mPrint("TSDB-iCore mgmt module already started...");
     return 0;
   }
 
@@ -147,7 +147,7 @@ int mgmtStartSystem() {
 
   mgmtStartMgmtTimer();
 
-  mPrint("TDengine mgmt is initialized successfully");
+  mPrint("TSDB-iCore mgmt is initialized successfully");
 
   return 0;
 }

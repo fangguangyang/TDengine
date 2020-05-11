@@ -59,7 +59,7 @@ void mgmtCheckAcct() {
   pAcct->acctId = 0;
   strcpy(pAcct->user, "root");
 
-  mgmtCreateUser(pAcct, "root", "taosdata");
+  mgmtCreateUser(pAcct, "root", "steerinfo");
   mgmtCreateUser(pAcct, "monitor", tsInternalPass);
   mgmtCreateUser(pAcct, "_root", tsInternalPass);
 }
