@@ -34,12 +34,14 @@ extern "C" {
 
 #define TSDB_INVALID_SUPER_TABLE_ID -1
 
+#define TSDB_STATUS_COMMIT_START 1
+#define TSDB_STATUS_COMMIT_OVER  2
+
 // --------- TSDB APPLICATION HANDLE DEFINITION
 typedef struct {
-  // WAL handle
   void *appH;
   void *cqH;
-  int (*walCallBack)(void *);
+  int (*notifyStatus)(void *, int status);
   int (*eventCallBack)(void *);
 } STsdbAppH;
 
@@ -102,12 +104,14 @@ int  tsdbTableSetSName(STableCfg *config, char *sname, bool dup);
 void tsdbClearTableCfg(STableCfg *config);
 
 int32_t tsdbGetTableTagVal(TsdbRepoT *repo, STableId* id, int32_t colId, int16_t *type, int16_t *bytes, char **val);
-int32_t tsdbGetTableName(TsdbRepoT *repo, STableId* id, char** name);
+char* tsdbGetTableName(TsdbRepoT *repo, const STableId* id, int16_t* bytes);
 
 int   tsdbCreateTable(TsdbRepoT *repo, STableCfg *pCfg);
 int   tsdbDropTable(TsdbRepoT *pRepo, STableId tableId);
 int   tsdbAlterTable(TsdbRepoT *repo, STableCfg *pCfg);
 TSKEY tsdbGetTableLastKey(TsdbRepoT *repo, int64_t uid);
+
+uint32_t tsdbGetFileInfo(TsdbRepoT *repo, char *name, uint32_t *index, int32_t *size);
 
 // the TSDB repository info
 typedef struct STsdbRepoInfo {

@@ -93,13 +93,14 @@ echo "numOfLogLines    100000000"            >> $TAOS_CFG
 echo "dDebugFlag       135"                  >> $TAOS_CFG
 echo "mDebugFlag       135"                  >> $TAOS_CFG
 echo "sdbDebugFlag     135"                  >> $TAOS_CFG
-echo "rpcDebugFlag     135"                  >> $TAOS_CFG
+echo "rpcDebugFlag     151"                  >> $TAOS_CFG
 echo "tmrDebugFlag     131"                  >> $TAOS_CFG
 echo "cDebugFlag       135"                  >> $TAOS_CFG
 echo "httpDebugFlag    135"                  >> $TAOS_CFG
 echo "monitorDebugFlag 135"                  >> $TAOS_CFG
 echo "udebugFlag       135"                  >> $TAOS_CFG
-echo "clog             0"                    >> $TAOS_CFG
+echo "tablemetakeeptimer 5"                  >> $TAOS_CFG
+echo "wal              0"                    >> $TAOS_CFG
 echo "asyncLog         0"                    >> $TAOS_CFG
 echo "locale           en_US.UTF-8"          >> $TAOS_CFG
 echo " "                                     >> $TAOS_CFG

@@ -33,12 +33,11 @@ static int32_t  tsOpennedVnodes;
 static void    *tsDnodeVnodesHash;
 static void     vnodeCleanUp(SVnodeObj *pVnode);
 static void     vnodeBuildVloadMsg(char *pNode, void * param);
-static int      vnodeWalCallback(void *arg);
 static int32_t  vnodeSaveCfg(SMDCreateVnodeMsg *pVnodeCfg);
 static int32_t  vnodeReadCfg(SVnodeObj *pVnode);
 static int32_t  vnodeSaveVersion(SVnodeObj *pVnode);
 static bool     vnodeReadVersion(SVnodeObj *pVnode);
-static int      vnodeWalCallback(void *arg);
+static int      vnodeProcessTsdbStatus(void *arg, int status);
 static uint32_t vnodeGetFileInfo(void *ahandle, char *name, uint32_t *index, int32_t *size);
 static int      vnodeGetWalInfo(void *ahandle, char *name, uint32_t *index);
 static void     vnodeNotifyRole(void *ahandle, int8_t role);
@@ -182,6 +181,7 @@ int32_t vnodeOpen(int32_t vnode, char *rootDir) {
   pVnode->refCount = 1;
   pVnode->version  = 0;  
   pVnode->tsdbCfg.tsdbId = pVnode->vgId;
+  pVnode->rootDir = strdup(rootDir);
   taosAddIntHash(tsDnodeVnodesHash, pVnode->vgId, (char *)(&pVnode));
   
   int32_t code = vnodeReadCfg(pVnode);
@@ -205,7 +205,7 @@ int32_t vnodeOpen(int32_t vnode, char *rootDir) {
 
   STsdbAppH appH = {0};
   appH.appH = (void *)pVnode;
-  appH.walCallBack = vnodeWalCallback;
+  appH.notifyStatus = vnodeProcessTsdbStatus;
   appH.cqH = pVnode->cq;
 
   sprintf(temp, "%s/tsdb", rootDir);
@@ -271,6 +271,7 @@ void vnodeRelease(void *pVnodeRaw) {
     return;
   }
 
+  tfree(pVnode->rootDir);
   // remove read queue
   dnodeFreeRqueue(pVnode->rqueue);
   pVnode->rqueue = NULL;
@@ -288,7 +289,7 @@ void vnodeRelease(void *pVnodeRaw) {
   free(pVnode);
 
   int32_t count = atomic_sub_fetch_32(&tsOpennedVnodes, 1);
-  vTrace("vgId:%d, vnode is released, vnodes:%d", pVnode, vgId, count);
+  vTrace("vgId:%d, vnode is released, vnodes:%d", vgId, count);
 
   if (count <= 0) {
     taosCleanUpIntHash(tsDnodeVnodesHash);
@@ -372,20 +373,27 @@ static void vnodeCleanUp(SVnodeObj *pVnode) {
   walClose(pVnode->wal);
   pVnode->wal = NULL;
 
-  vnodeSaveVersion(pVnode);
   vnodeRelease(pVnode);
 }
 
 // TODO: this is a simple implement
-static int vnodeWalCallback(void *arg) {
+static int vnodeProcessTsdbStatus(void *arg, int status) {
   SVnodeObj *pVnode = arg;
-  return walRenew(pVnode->wal);
+
+  if (status == TSDB_STATUS_COMMIT_START) {
+    pVnode->savedVersion = pVnode->version; 
+    return walRenew(pVnode->wal);
+  }
+
+  if (status == TSDB_STATUS_COMMIT_OVER)
+    return vnodeSaveVersion(pVnode);
+
+  return 0; 
 }
 
 static uint32_t vnodeGetFileInfo(void *ahandle, char *name, uint32_t *index, int32_t *size) {
-  // SVnodeObj *pVnode = ahandle;
-  //tsdbGetFileInfo(pVnode->tsdb, name, index, size);
-  return 0;
+  SVnodeObj *pVnode = ahandle;
+  return tsdbGetFileInfo(pVnode->tsdb, name, index, size);
 }
 
 static int vnodeGetWalInfo(void *ahandle, char *name, uint32_t *index) {
@@ -405,9 +413,17 @@ static void vnodeNotifyRole(void *ahandle, int8_t role) {
 
 static void vnodeNotifyFileSynced(void *ahandle) {
   SVnodeObj *pVnode = ahandle;
-  vTrace("pVnode:%p vgId:%d, data file is synced", pVnode, pVnode->vgId);
+  vTrace("vgId:%d, data file is synced", pVnode->vgId);
 
+  char rootDir[128] = "\0";
+  sprintf(rootDir, "%s/tsdb", pVnode->rootDir);
   // clsoe tsdb, then open tsdb
+  tsdbCloseRepo(pVnode->tsdb);
+  STsdbAppH appH = {0};
+  appH.appH = (void *)pVnode;
+  appH.notifyStatus = vnodeProcessTsdbStatus;
+  appH.cqH = pVnode->cq;
+  pVnode->tsdb = tsdbOpenRepo(rootDir, &appH);
 }
 
 static int32_t vnodeSaveCfg(SMDCreateVnodeMsg *pVnodeCfg) {
@@ -676,14 +692,14 @@ static int32_t vnodeSaveVersion(SVnodeObj *pVnode) {
   char *  content = calloc(1, maxLen + 1);
 
   len += snprintf(content + len, maxLen - len, "{\n");
-  len += snprintf(content + len, maxLen - len, "  \"version\": %" PRId64 "\n", pVnode->version);
+  len += snprintf(content + len, maxLen - len, "  \"version\": %" PRId64 "\n", pVnode->savedVersion);
   len += snprintf(content + len, maxLen - len, "}\n");
 
   fwrite(content, 1, len, fp);
   fclose(fp);
   free(content);
 
-  vPrint("vgId:%d, save vnode version:%" PRId64 " successed", pVnode->vgId, pVnode->version);
+  vPrint("vgId:%d, save vnode version:%" PRId64 " succeed", pVnode->vgId, pVnode->savedVersion);
 
   return 0;
 }
@@ -725,7 +741,7 @@ static bool vnodeReadVersion(SVnodeObj *pVnode) {
 
   ret = true;
 
-  vPrint("vgId:%d, read vnode version successed, version:%%" PRId64, pVnode->vgId, pVnode->version);
+  vPrint("vgId:%d, read vnode version succeed, version:%" PRId64, pVnode->vgId, pVnode->version);
 
 PARSE_OVER:
   free(content);

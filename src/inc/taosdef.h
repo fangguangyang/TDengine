@@ -32,9 +32,17 @@ extern "C" {
 #define TSKEY int64_t
 #endif
 
+#define TSWINDOW_INITIALIZER {INT64_MIN, INT64_MAX};
+#define TSKEY_INITIAL_VAL    INT64_MIN
+
 // ----------------- For variable data types such as TSDB_DATA_TYPE_BINARY and TSDB_DATA_TYPE_NCHAR
 typedef int32_t VarDataOffsetT;
 typedef int16_t VarDataLenT;
+
+typedef struct tstr {
+  VarDataLenT len;
+  char        data[];
+} tstr;
 
 #define VARSTR_HEADER_SIZE  sizeof(VarDataLenT)
 
@@ -74,10 +82,10 @@ extern const int32_t TYPE_BYTES[11];
 #define TSDB_DATA_NULL_STR              "NULL"
 #define TSDB_DATA_NULL_STR_L            "null"
 
-#define TSDB_TRUE 1
-#define TSDB_FALSE 0
-#define TSDB_OK 0
-#define TSDB_ERR -1
+#define TSDB_TRUE   1
+#define TSDB_FALSE  0
+#define TSDB_OK     0
+#define TSDB_ERR   -1
 
 #define TS_PATH_DELIMITER "."
 
@@ -336,8 +344,6 @@ void tsDataSwap(void *pLeft, void *pRight, int32_t type, int32_t size);
 #define TSDB_MAX_DBS           100
 #define TSDB_MAX_VGROUPS       1000
 #define TSDB_MAX_SUPER_TABLES  100
-#define TSDB_MAX_NORMAL_TABLES 1000
-#define TSDB_MAX_CHILD_TABLES  100000
 
 #define TSDB_PORT_DNODESHELL 0 
 #define TSDB_PORT_DNODEDNODE 5 
